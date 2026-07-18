@@ -207,6 +207,40 @@ Gracias por apoyar 💜
 
 <button id="audioBtn">🔊 Música</button>
 
+<!-- SCRIPT DE FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBLgXADggtPou6nqW_koMpSNXXHeOJVKUA",
+    authDomain: "donacionlaptop.firebaseapp.com",
+    databaseURL: "https://donacionlaptop-default-rtdb.firebaseio.com",
+    projectId: "donacionlaptop",
+    storageBucket: "donacionlaptop.firebasestorage.app",
+    messagingSenderId: "242520017953",
+    appId: "1:242520017953:web:926a3a82f5bb5389496760"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const contadorRef = ref(db, 'visitas');
+
+  // Incrementar visitas
+  runTransaction(contadorRef, (currentValue) => {
+    return (currentValue || 0) + 1;
+  });
+
+  // Escuchar visitas en tiempo real
+  onValue(contadorRef, (snapshot) => {
+    const visitas = snapshot.val() || 0;
+    document.getElementById("visitas").innerText = "🔥 " + visitas + " personas ya vieron esto";
+  }, () => {
+    document.getElementById("visitas").innerText = "👀 Visitas no disponibles";
+  });
+</script>
+
+<!-- TUS SCRIPTS ACTUALES -->
 <script>
 let total = 1200;
 let metaVisual = localStorage.getItem("dinero") || 60;
@@ -239,20 +273,6 @@ function actualizarPersonas() {
     "👥 " + personas + " personas han apoyado";
 }
 
-// 👀 VISITAS (FIX DEFINITIVO)
-function cargarVisitas() {
-  fetch("https://api.countapi.xyz/hit/jhosep/donaciones")
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("visitas").innerText =
-        "🔥 " + data.value + " personas ya vieron esto";
-    })
-    .catch(() => {
-      document.getElementById("visitas").innerText =
-        "👀 Visitas no disponibles";
-    });
-}
-
 // 📋 COPIAR
 document.getElementById("msg").onclick = function() {
   navigator.clipboard.writeText(this.value);
@@ -281,10 +301,6 @@ btn.onclick = () => {
 // 🚀 INIT
 animar();
 actualizarPersonas();
-
-// ⏳ delay anti-bug
-setTimeout(cargarVisitas, 800);
-
 </script>
 
 </body>
