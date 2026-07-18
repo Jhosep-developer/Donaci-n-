@@ -188,11 +188,7 @@ Cada aporte suma 🙏
 <div class="msg-box">
 <p>💬 Usa este mensaje al donar:</p>
 
-<input 
-  id="msg"
-  value="Apoyo para tu laptop 💻"
-  readonly
->
+<input id="msg" value="Apoyo para tu laptop 💻" readonly>
 
 <p class="small">(Toca para copiar)</p>
 </div>
@@ -213,14 +209,11 @@ Gracias por apoyar 💜
 
 <script>
 let total = 1200;
-
-// 🔥 DATOS GUARDADOS
 let metaVisual = localStorage.getItem("dinero") || 60;
 let personas = localStorage.getItem("personas") || 3;
-
 let actual = 0;
 
-// 🎯 ANIMACIÓN DINERO
+// 🎯 ANIMACIÓN
 function animar() {
   let incremento = Math.ceil(metaVisual / 50);
 
@@ -246,15 +239,21 @@ function actualizarPersonas() {
     "👥 " + personas + " personas han apoyado";
 }
 
-// 👀 VISITAS REALES
-fetch("https://api.countapi.xyz/hit/jhosep/donaciones")
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("visitas").innerText =
-      "👀 " + data.value + " visitas";
-  });
+// 👀 VISITAS (FIX DEFINITIVO)
+function cargarVisitas() {
+  fetch("https://api.countapi.xyz/hit/jhosep/donaciones")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("visitas").innerText =
+        "🔥 " + data.value + " personas ya vieron esto";
+    })
+    .catch(() => {
+      document.getElementById("visitas").innerText =
+        "👀 Visitas no disponibles";
+    });
+}
 
-// 📋 COPIAR MENSAJE
+// 📋 COPIAR
 document.getElementById("msg").onclick = function() {
   navigator.clipboard.writeText(this.value);
   this.value = "✔ Copiado!";
@@ -263,10 +262,9 @@ document.getElementById("msg").onclick = function() {
   }, 1500);
 };
 
-// 🎧 AUDIO (mejorado para móvil)
+// 🎧 AUDIO
 const music = document.getElementById("bgMusic");
 const btn = document.getElementById("audioBtn");
-
 let activo = false;
 
 btn.onclick = () => {
@@ -283,6 +281,10 @@ btn.onclick = () => {
 // 🚀 INIT
 animar();
 actualizarPersonas();
+
+// ⏳ delay anti-bug
+setTimeout(cargarVisitas, 800);
+
 </script>
 
 </body>
