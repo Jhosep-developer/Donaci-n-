@@ -15,7 +15,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Fondo animado */
 body::before {
   content: "";
   position: fixed;
@@ -92,6 +91,11 @@ p {
   color: #a78bfa;
 }
 
+.visitas {
+  margin-top: 8px;
+  color: #38bdf8;
+}
+
 .qr-box img {
   width: clamp(180px, 50vw, 240px);
   border-radius: 12px;
@@ -120,7 +124,6 @@ p {
   font-weight: bold;
 }
 
-/* INPUT MENSAJE */
 .msg-box input {
   width: 100%;
   padding: 12px;
@@ -134,7 +137,6 @@ p {
   cursor: pointer;
 }
 
-/* AUDIO BTN */
 #audioBtn {
   position: fixed;
   bottom: 20px;
@@ -147,7 +149,6 @@ p {
   font-weight: bold;
   cursor: pointer;
 }
-
 </style>
 </head>
 
@@ -172,6 +173,7 @@ Cada aporte suma 🙏
 </div>
 
 <div class="people" id="people">👥 0 personas</div>
+<div class="visitas" id="visitas">👀 Cargando visitas...</div>
 
 <div class="urgencia">⚡ Meta activa</div>
 </div>
@@ -183,7 +185,6 @@ Cada aporte suma 🙏
 <img src="donar.jpg">
 </div>
 
-<!-- MENSAJE -->
 <div class="msg-box">
 <p>💬 Usa este mensaje al donar:</p>
 
@@ -204,7 +205,6 @@ Gracias por apoyar 💜
 
 </div>
 
-<!-- AUDIO -->
 <audio id="bgMusic" loop>
   <source src="espera.mp3" type="audio/mpeg">
 </audio>
@@ -214,12 +214,13 @@ Gracias por apoyar 💜
 <script>
 let total = 1200;
 
-// 🔥 DATOS (se guardan)
+// 🔥 DATOS GUARDADOS
 let metaVisual = localStorage.getItem("dinero") || 60;
 let personas = localStorage.getItem("personas") || 3;
 
 let actual = 0;
 
+// 🎯 ANIMACIÓN DINERO
 function animar() {
   let incremento = Math.ceil(metaVisual / 50);
 
@@ -236,14 +237,22 @@ function animar() {
       requestAnimationFrame(frame);
     }
   }
-
   frame();
 }
 
+// 👥 PERSONAS
 function actualizarPersonas() {
   document.getElementById("people").innerText =
     "👥 " + personas + " personas han apoyado";
 }
+
+// 👀 VISITAS REALES
+fetch("https://api.countapi.xyz/hit/jhosep/donaciones")
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("visitas").innerText =
+      "👀 " + data.value + " visitas";
+  });
 
 // 📋 COPIAR MENSAJE
 document.getElementById("msg").onclick = function() {
@@ -254,7 +263,7 @@ document.getElementById("msg").onclick = function() {
   }, 1500);
 };
 
-// 🎧 AUDIO (compatible móvil)
+// 🎧 AUDIO (mejorado para móvil)
 const music = document.getElementById("bgMusic");
 const btn = document.getElementById("audioBtn");
 
@@ -262,7 +271,7 @@ let activo = false;
 
 btn.onclick = () => {
   if (!activo) {
-    music.play();
+    music.play().catch(() => {});
     btn.innerText = "🔇 Pausar";
   } else {
     music.pause();
