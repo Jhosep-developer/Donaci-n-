@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apóyame 💻</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #020617, #020617, #000);
+  color: white;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+/* Fondo animado */
+body::before {
+  content: "";
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, #22c55e 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: bgMove 40s linear infinite;
+  opacity: 0.08;
+}
+
+@keyframes bgMove {
+  from { transform: translate(0,0); }
+  to { transform: translate(-300px,-300px); }
+}
+
+.container {
+  width: 90%;
+  max-width: 650px;
+  margin: auto;
+  padding: 50px 20px;
+}
+
+h1 {
+  font-size: clamp(26px, 5vw, 36px);
+  background: linear-gradient(90deg,#22c55e,#38bdf8,#a78bfa);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+p {
+  font-size: clamp(15px, 4vw, 17px);
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 25px;
+  margin-top: 25px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 25px rgba(0,0,0,0.4);
+  animation: fadeUp 1s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.counter {
+  font-size: 34px;
+  font-weight: bold;
+  color: #4ade80;
+}
+
+.progress {
+  background: #0f172a;
+  border-radius: 30px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+.progress-bar {
+  height: 22px;
+  width: 0%;
+  background: linear-gradient(90deg,#22c55e,#4ade80);
+  transition: width 0.8s ease;
+}
+
+.people {
+  margin-top: 10px;
+  color: #a78bfa;
+}
+
+.qr-box img {
+  width: clamp(180px, 50vw, 240px);
+  border-radius: 12px;
+  animation: pulse 3s infinite;
+  transition: 0.3s;
+}
+
+.qr-box img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 25px #22c55e;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.small {
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.urgencia {
+  color: #facc15;
+  font-weight: bold;
+}
+
+/* INPUT MENSAJE */
+.msg-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  text-align: center;
+  background: #020617;
+  color: #22c55e;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+/* AUDIO BTN */
+#audioBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #22c55e;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💻 Construyendo mi futuro</h1>
+
+<p>
+Estoy reuniendo <strong>S/1200</strong> para una laptop de segunda mano.<br><br>
+Cada aporte suma 🙏
+</p>
+
+<div class="card">
+<h2>📊 Progreso</h2>
+
+<div class="counter" id="counter">S/0</div>
+
+<div class="progress">
+<div class="progress-bar" id="bar"></div>
+</div>
+
+<div class="people" id="people">👥 0 personas</div>
+
+<div class="urgencia">⚡ Meta activa</div>
+</div>
+
+<div class="card">
+<h2>📱 Escanea para apoyar</h2>
+
+<div class="qr-box">
+<img src="donar.jpg">
+</div>
+
+<!-- MENSAJE -->
+<div class="msg-box">
+<p>💬 Usa este mensaje al donar:</p>
+
+<input 
+  id="msg"
+  value="Apoyo para tu laptop 💻"
+  readonly
+>
+
+<p class="small">(Toca para copiar)</p>
+</div>
+
+<p class="small">
+Gracias por apoyar 💜
+</p>
+
+</div>
+
+</div>
+
+<!-- AUDIO -->
+<audio id="bgMusic" loop>
+  <source src="espera.mp3" type="audio/mpeg">
+</audio>
+
+<button id="audioBtn">🔊 Música</button>
+
+<script>
+let total = 1200;
+
+// 🔥 DATOS (se guardan)
+let metaVisual = localStorage.getItem("dinero") || 60;
+let personas = localStorage.getItem("personas") || 3;
+
+let actual = 0;
+
+function animar() {
+  let incremento = Math.ceil(metaVisual / 50);
+
+  function frame() {
+    if (actual < metaVisual) {
+      actual += incremento;
+      if (actual > metaVisual) actual = metaVisual;
+
+      document.getElementById("counter").innerText = "S/" + actual;
+
+      let porcentaje = (actual / total) * 100;
+      document.getElementById("bar").style.width = porcentaje + "%";
+
+      requestAnimationFrame(frame);
+    }
+  }
+
+  frame();
+}
+
+function actualizarPersonas() {
+  document.getElementById("people").innerText =
+    "👥 " + personas + " personas han apoyado";
+}
+
+// 📋 COPIAR MENSAJE
+document.getElementById("msg").onclick = function() {
+  navigator.clipboard.writeText(this.value);
+  this.value = "✔ Copiado!";
+  setTimeout(() => {
+    this.value = "Apoyo para tu laptop 💻";
+  }, 1500);
+};
+
+// 🎧 AUDIO (compatible móvil)
+const music = document.getElementById("bgMusic");
+const btn = document.getElementById("audioBtn");
+
+let activo = false;
+
+btn.onclick = () => {
+  if (!activo) {
+    music.play();
+    btn.innerText = "🔇 Pausar";
+  } else {
+    music.pause();
+    btn.innerText = "🔊 Música";
+  }
+  activo = !activo;
+};
+
+// 🚀 INIT
+animar();
+actualizarPersonas();
+</script>
+
+</body>
+</html>
